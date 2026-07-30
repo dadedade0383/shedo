@@ -1,7 +1,7 @@
 (function(){
 'use strict';
 
-const APP_VERSION = '20260730e';
+const APP_VERSION = '20260730f';
 
 // 自愈：版本号变了就清缓存 + 注销 SW + 强制刷新
 (function(){

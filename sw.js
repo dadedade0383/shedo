@@ -1,5 +1,17 @@
-const CACHE = 'shedo-v10';
-const FILES = ['/','/index.html','/styles.css','/js/app.js','/manifest.webmanifest','/assets/dog-photo.jpg','/assets/icon-192x192.png','/assets/icon-512x512.png'];
+// 根据 SW 自身位置推算部署根路径（兼容 GitHub Pages 子目录 /shedo/）
+const BASE = new URL('.', self.location.href).pathname.replace(/\/$/,'');
+
+const CACHE = 'shedo-v11';
+const FILES = [
+  BASE + '/',
+  BASE + '/index.html',
+  BASE + '/styles.css',
+  BASE + '/js/app.js',
+  BASE + '/manifest.webmanifest',
+  BASE + '/assets/dog-photo.jpg',
+  BASE + '/assets/icon-192x192.png',
+  BASE + '/assets/icon-512x512.png'
+];
 
 self.addEventListener('install',e=>{
   e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)));
@@ -14,7 +26,7 @@ self.addEventListener('activate',e=>{
 self.addEventListener('fetch',e=>{
   const url = new URL(e.request.url);
 
-  // 素材JSON: Network First（确保每天更新）
+  // 素材JSON: Network First
   if(url.pathname.includes('/data/daily-brief-')){
     e.respondWith(
       fetch(e.request).then(response=>{
@@ -26,9 +38,10 @@ self.addEventListener('fetch',e=>{
     return;
   }
 
-  // 核心文件 (HTML/JS/CSS): Network First —— 每次刷新先取最新版，保证更新生效
-  if(url.pathname==='/' || url.pathname==='/index.html' ||
-     url.pathname.endsWith('/styles.css') || url.pathname.endsWith('/app.js')){
+  // 核心文件 (HTML/JS/CSS): Network First
+  const path = url.pathname;
+  if(path === BASE + '/' || path === BASE + '/index.html' ||
+     path.endsWith('/styles.css') || path.endsWith('/app.js')){
     e.respondWith(
       fetch(e.request).then(response=>{
         const clone = response.clone();
@@ -39,7 +52,7 @@ self.addEventListener('fetch',e=>{
     return;
   }
 
-  // 其他资源 (图片等): Cache First
+  // 其他资源: Cache First
   e.respondWith(
     caches.match(e.request).then(r=>r||fetch(e.request))
   );
