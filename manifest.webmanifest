@@ -1,0 +1,24 @@
+{
+  "name": "shedo",
+  "short_name": "shedo",
+  "description": "shedo · 她做，她行，她说了算。",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a8c4e",
+  "theme_color": "#1a8c4e",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "assets/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

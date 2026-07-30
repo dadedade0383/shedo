@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#1a8c4e">
+  <meta name="description" content="shedo · 她做，她行，她说了算。">
+  <title>shedo</title>
+  <meta name="apple-mobile-web-app-title" content="shedo">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <link rel="stylesheet" href="styles.css?v=7">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/icon-192x192.png">
+</head>
+<body>
+
+<button class="hamburger" id="hamburger" aria-label="菜单">
+  <span></span><span></span><span></span>
+</button>
+<div class="overlay" id="overlay"></div>
+
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">
+      <svg width="28" height="28" viewBox="0 0 28 28"><rect x="3" y="2" width="22" height="22" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="10" y1="10" x2="18" y2="10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="10" y1="14" x2="16" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="10" y1="18" x2="14" y2="18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </div>
+    <span class="sidebar-title">shedo</span>
+  </div>
+  <ul class="nav-list" id="navList">
+    <li class="nav-item active" data-view="dashboard">
+      <svg width="20" height="20" viewBox="0 0 20 20" class="nav-icon"><rect x="2" y="3" width="7" height="6" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="11" y="3" width="7" height="6" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="2" y="11" width="7" height="6" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="11" y="11" width="7" height="6" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+      <span>看板</span>
+    </li>
+    <li class="nav-item" data-view="thesis">
+      <svg width="20" height="20" viewBox="0 0 20 20" class="nav-icon"><path d="M5 2h8l4 4v12a1 1 0 01-1 1H5a1 1 0 01-1-1V3a1 1 0 011-1z" fill="none" stroke="currentColor" stroke-width="1.5"/><polyline points="13,2 13,6 17,6" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="7" y1="10" x2="13" y2="10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="7" y1="13" x2="13" y2="13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span>论文冲刺</span>
+    </li>
+    <li class="nav-item" data-view="exam">
+      <svg width="20" height="20" viewBox="0 0 20 20" class="nav-icon"><rect x="3" y="1" width="14" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><polyline points="7,8 9,11 13,7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><line x1="6" y1="16" x2="14" y2="16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span>考公持久战</span>
+    </li>
+    <li class="nav-divider"><span>身心健康</span></li>
+    <li class="nav-item" data-view="meal">
+      <svg width="20" height="20" viewBox="0 0 20 20" class="nav-icon"><circle cx="8" cy="10" r="6" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="4" y1="10" x2="12" y2="10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="8" y1="6" x2="8" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="15" y1="14" x2="15" y2="18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="15" cy="11" r="2" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+      <span>吃饭·带饭</span>
+    </li>
+    <li class="nav-item" data-view="fitness">
+      <svg width="20" height="20" viewBox="0 0 20 20" class="nav-icon"><circle cx="10" cy="10" r="7" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="10" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="10" y1="3" x2="10" y2="7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span>健身·排球</span>
+    </li>
+    <li class="nav-item" data-view="dog">
+      <svg width="20" height="20" viewBox="0 0 20 20" class="nav-icon"><circle cx="7" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="1.5"/><ellipse cx="7" cy="5" rx="1" ry="1.2" fill="currentColor" opacity=".6"/><circle cx="5" cy="4" r=".6" fill="currentColor" opacity=".6"/><circle cx="9" cy="4" r=".6" fill="currentColor" opacity=".6"/><path d="M11 9 L18 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M19 6 L18 8" stroke="currentColor" stroke-width="1" stroke-linecap="round"/><circle cx="10" cy="15" r="6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+      <span>小狗</span>
+    </li>
+    <li class="nav-item" data-view="sewing">
+      <svg width="20" height="20" viewBox="0 0 20 20" class="nav-icon"><line x1="10" y1="2" x2="10" y2="6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><ellipse cx="10" cy="9" rx="2" ry="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M5 10 C2 14 4 18 8 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M15 10 C18 14 16 18 12 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="8" y1="16" x2="3" y2="9" stroke="currentColor" stroke-width="1" stroke-linecap="round"/><line x1="12" y1="16" x2="17" y2="10" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>
+      <span>缝纫</span>
+    </li>
+    <li class="nav-item" data-view="video">
+      <svg width="20" height="20" viewBox="0 0 20 20" class="nav-icon"><rect x="3" y="4" width="14" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><polygon points="8,7 14,10 8,13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+      <span>短视频</span>
+    </li>
+    <li class="nav-item" data-view="novel">
+      <svg width="20" height="20" viewBox="0 0 20 20" class="nav-icon"><path d="M5 3h7l4 4v10a1 1 0 01-1 1H5a1 1 0 01-1-1V4a1 1 0 011-1z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M12 3v4h4" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="7" y1="10" x2="13" y2="10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><line x1="7" y1="13" x2="13" y2="13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><line x1="7" y1="16" x2="11" y2="16" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      <span>写小说</span>
+    </li>
+    <li class="nav-item" data-view="memo">
+      <svg width="20" height="20" viewBox="0 0 20 20" class="nav-icon"><path d="M5 3h7a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="7" y1="8" x2="13" y2="8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><line x1="7" y1="11" x2="13" y2="11" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><line x1="7" y1="14" x2="11" y2="14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      <span>随心记</span>
+    </li>
+  </ul>
+  <div class="sidebar-footer">
+    <button class="nav-item" data-view="settings">
+      <svg width="20" height="20" viewBox="0 0 20 20" class="nav-icon"><circle cx="10" cy="10" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.3 4.3l1.4 1.4M14.3 14.3l1.4 1.4M4.3 15.7l1.4-1.4M14.3 5.7l1.4-1.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span>设置</span>
+    </button>
+  </div>
+</nav>
+
+<main class="main-content" id="mainContent">
+
+  <!-- ============================================================ -->
+  <!-- 看板 -->
+  <!-- ============================================================ -->
+  <section class="view active" id="view-dashboard">
+    <div class="view-header">
+      <h1>看板</h1>
+      <p class="view-date" id="dashboardDate"></p>
+    </div>
+
+    <!-- 论文倒计时卡片 -->
+    <div class="card card-highlight" id="thesisCountdownCard">
+      <div class="card-label">论文倒计时</div>
+      <div class="countdown-display">
+        <span class="countdown-number" id="countdownDays">--</span>
+        <span class="countdown-unit">天</span>
+      </div>
+      <div class="countdown-label" id="countdownLabel">设置交稿日期</div>
+    </div>
+
+    <!-- 今日时间线 -->
+    <div class="card">
+      <h3>今日时间线 <span class="time-now" id="timeNow"></span></h3>
+      <div class="timeline" id="timeline"></div>
+    </div>
+
+    <!-- 主线健康度 -->
+    <div class="card">
+      <h3>主线健康度</h3>
+      <div class="health-rings" id="healthRings"></div>
+    </div>
+
+    <!-- 今日时间盒 Checklist -->
+    <div class="card" id="dailyChecklistCard">
+      <h3>今日打卡</h3>
+      <div class="checklist-mini" id="dailyChecklist"></div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 论文冲刺 —— 勇气模式 -->
+  <!-- ============================================================ -->
+  <section class="view" id="view-thesis">
+    <div class="view-header">
+      <h1>论文冲刺</h1>
+      <p class="view-sub">公司创业方向 · 一个月内完成</p>
+    </div>
+
+    <div class="card card-settings">
+      <h3>论文设置</h3>
+      <div class="form-row">
+        <label>交稿截止日期</label>
+        <input type="date" id="thesisDeadline">
+      </div>
+      <div class="form-row">
+        <label>每日写作目标（字）</label>
+        <input type="number" id="thesisDailyGoal" value="1000" min="100" step="100">
+      </div>
+      <button class="btn btn-primary" id="thesisSaveSettings">保存</button>
+    </div>
+
+    <!-- 每日最小行动 -->
+    <div class="card card-courage" id="minimalActionCard">
+      <h3>今天的最小一步</h3>
+      <p class="card-sub-text">不需要写完一章。只要迈出一小步。</p>
+      <div class="minimal-action-row">
+        <input type="text" id="minimalActionInput" class="input-compact" placeholder="比如：把引言第一段的论点写出来" style="flex:1">
+        <button class="btn btn-sm btn-primary" id="minimalActionSet">定下</button>
+      </div>
+      <div class="action-display" id="minimalActionDisplay">
+        <div class="action-check">
+          <input type="checkbox" id="minimalActionDone">
+          <span id="minimalActionText">尚未设定今日最小行动</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 写作打卡 -->
+    <div class="card">
+      <h3>今日写作</h3>
+      <div class="today-track">
+        <div class="track-ring-container" id="thesisRing"></div>
+        <div class="track-info">
+          <div class="track-number" id="thesisTodayWords">0</div>
+          <div class="track-label">/ 目标 <span id="thesisGoalShow">1000</span> 字</div>
+          <input type="number" id="thesisWordInput" class="input-compact" placeholder="输入今日字数" min="0" style="width:100%">
+          <button class="btn btn-sm btn-primary" id="thesisAddWords">记录</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 困难拆解板 -->
+    <div class="card">
+      <h3>困难拆解板</h3>
+      <p class="card-sub-text">把让你焦虑的大问题拆成小步骤，每次只面对一个。</p>
+      <div class="form-row-inline" style="margin-bottom:8px">
+        <input type="text" id="difficultyInput" class="input-compact" placeholder="困扰你的是什么？" style="flex:1">
+        <button class="btn btn-sm btn-primary" id="difficultyAdd">拆解</button>
+      </div>
+      <div class="difficulty-list" id="difficultyList"></div>
+    </div>
+
+    <!-- 勇气激励 -->
+    <div class="card card-courage" id="courageCard">
+      <div class="courage-quote" id="courageQuote">今天你敢于面对的，就是明天你不再害怕的。</div>
+      <button class="btn btn-sm btn-outline" id="courageRefresh">换一句</button>
+    </div>
+
+    <!-- 近期记录 -->
+    <div class="card">
+      <h3>写作记录</h3>
+      <div class="log-list" id="thesisLog"></div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 考公持久战 + 素材库 -->
+  <!-- ============================================================ -->
+  <section class="view" id="view-exam">
+    <div class="view-header">
+      <h1>考公持久战</h1>
+      <p class="view-sub">6 个月持久战 · 江苏省</p>
+    </div>
+
+    <!-- Tab 切换 -->
+    <div class="tab-bar" id="examTabs">
+      <button class="tab-btn active" data-tab="exam-study">刷题学习</button>
+      <button class="tab-btn" data-tab="exam-material">申论素材库</button>
+    </div>
+
+    <!-- 刷题学习面板 -->
+    <div class="tab-panel active" id="panel-exam-study">
+      <div class="card card-settings">
+        <h3>考试设置</h3>
+        <div class="form-row">
+          <label>考试类型</label>
+          <select id="examType"><option value="">请选择</option><option value="国考">国考</option><option value="省考">省考</option></select>
+        </div>
+        <div class="form-row">
+          <label>目标地区</label>
+          <input type="text" id="examRegion" placeholder="如：江苏">
+        </div>
+        <div class="form-row">
+          <label>备考开始日期</label>
+          <input type="date" id="examStartDate">
+        </div>
+        <button class="btn btn-primary" id="examSaveSettings">保存</button>
+      </div>
+      <div class="card">
+        <h3>当前阶段</h3>
+        <div class="stage-track">
+          <div class="stage-item active" data-stage="基础">基础</div>
+          <div class="stage-item" data-stage="强化">强化</div>
+          <div class="stage-item" data-stage="冲刺">冲刺</div>
+          <div class="stage-item" data-stage="模考">模考</div>
+        </div>
+        <button class="btn btn-sm btn-outline" id="examAdvance">进入下一阶段</button>
+      </div>
+      <div class="card">
+        <h3>今日刷题</h3>
+        <div class="form-row-inline">
+          <label>行测题数</label><input type="number" id="examXingce" class="input-compact" value="0" min="0">
+          <label>申论题数</label><input type="number" id="examShenlun" class="input-compact" value="0" min="0">
+          <label>错题数</label><input type="number" id="examErrors" class="input-compact" value="0" min="0">
+          <button class="btn btn-sm btn-primary" id="examAddRecord">记录</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3>刷题记录</h3>
+        <div class="log-list" id="examLog"></div>
+      </div>
+    </div>
+
+    <!-- 申论素材库面板 -->
+    <div class="tab-panel" id="panel-exam-material">
+      <div class="card">
+        <h3>申论素材库 <span class="card-badge" id="materialDate"></span></h3>
+        <p class="card-sub-text">每日由靓女从权威来源整理，保证真实可查证。点击日期切换查看。</p>
+        <div class="material-date-list" id="materialDateList"></div>
+      </div>
+      <div class="material-grid">
+        <div class="card material-card" id="materialWords">
+          <h3>好词好句</h3>
+          <div class="card-sub-text" style="margin-bottom:10px">江苏政府报告 · 人民日报 · 权威表述</div>
+          <div class="material-content" id="materialWordsContent"></div>
+        </div>
+        <div class="card material-card" id="materialCases">
+          <h3>案例素材</h3>
+          <div class="card-sub-text" style="margin-bottom:10px">江苏省典型 · 可作申论论据</div>
+          <div class="material-content" id="materialCasesContent"></div>
+        </div>
+        <div class="card material-card" id="materialNews">
+          <h3>每日时政</h3>
+          <div class="card-sub-text" style="margin-bottom:10px">全国时政大事 · 新闻三要素</div>
+          <div class="material-content" id="materialNewsContent"></div>
+        </div>
+      </div>
+      <div class="card" style="text-align:center;color:var(--text-muted);font-size:12px">
+        素材每日自动更新 | 当前查看：<span id="materialUpdateTime">--</span>
+        <button class="btn btn-outline btn-sm" id="materialRefreshBtn" style="display:block;margin:6px auto 0">�� 刷新当前日期素材</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 吃饭·带饭 —— 30分钟炒饭模式 -->
+  <!-- ============================================================ -->
+  <section class="view" id="view-meal">
+    <div class="view-header">
+      <h1>吃饭 · 带饭</h1>
+      <p class="view-sub">30 分钟晨间炒饭 · 兼顾训练营养</p>
+    </div>
+
+    <!-- 炒饭计时器 -->
+    <div class="card card-highlight" id="cookTimerCard">
+      <h3>晨间炒饭计时器 <span class="card-badge">30 分钟</span></h3>
+      <div class="timer-display" id="cookTimerDisplay">
+        <div class="timer-ring-container">
+          <svg width="120" height="120" viewBox="0 0 120 120" class="timer-ring-svg">
+            <circle cx="60" cy="60" r="52" fill="none" stroke="var(--border)" stroke-width="6"/>
+            <circle cx="60" cy="60" r="52" fill="none" stroke="var(--primary)" stroke-width="6" stroke-linecap="round" id="timerRingProgress"/>
+          </svg>
+          <div class="timer-time" id="timerTime">30:00</div>
+        </div>
+        <div class="timer-phase" id="timerPhase">准备开始</div>
+        <div class="timer-controls">
+          <button class="btn btn-primary" id="timerStart">开始炒饭</button>
+          <button class="btn btn-outline" id="timerPause" disabled>暂停</button>
+          <button class="btn btn-outline" id="timerReset">重置</button>
+        </div>
+        <div class="timer-steps" id="timerSteps">
+          <div class="timer-step" data-from="0" data-to="5"><span class="step-time">0-5 min</span><span class="step-desc">点火热锅、打蛋备料</span></div>
+          <div class="timer-step" data-from="5" data-to="15"><span class="step-time">5-15 min</span><span class="step-desc">炒蛋+配料+米饭下锅</span></div>
+          <div class="timer-step" data-from="15" data-to="25"><span class="step-time">15-25 min</span><span class="step-desc">大火翻炒、调味</span></div>
+          <div class="timer-step" data-from="25" data-to="30"><span class="step-time">25-30 min</span><span class="step-desc">装盒、简单清洁</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 常用食材库存 -->
+    <div class="card">
+      <h3>常用食材库存</h3>
+      <p class="card-sub-text">勾选需要采购的，自动加入采购清单</p>
+      <div class="pantry-grid" id="pantryGrid"></div>
+      <button class="btn btn-sm btn-primary" id="pantryToShopping">缺货加入采购清单</button>
+    </div>
+
+    <!-- 本周食谱 -->
+    <div class="card">
+      <h3>本周炒饭变体</h3>
+      <div class="week-plan" id="weekPlan"></div>
+    </div>
+
+    <!-- 采购清单 -->
+    <div class="card">
+      <h3>采购清单</h3>
+      <div class="shopping-input-row">
+        <input type="text" id="shoppingInput" class="input-compact" placeholder="添加物品..." style="flex:1">
+        <button class="btn btn-sm btn-primary" id="shoppingAdd">添加</button>
+      </div>
+      <ul class="shopping-list" id="shoppingList"></ul>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 健身·排球 —— 膝盖友好间隙训练 -->
+  <!-- ============================================================ -->
+  <section class="view" id="view-fitness">
+    <div class="view-header">
+      <h1>健身 · 排球向</h1>
+      <p class="view-sub">自重管理 · 弹跳提升 · 膝盖零损伤</p>
+    </div>
+
+    <!-- 核心问题卡 -->
+    <div class="card card-courage">
+      <h3>当前训练重点</h3>
+      <div class="focus-tags">
+        <span class="focus-tag tag-problem">自重大</span>
+        <span class="focus-tag tag-problem">弹跳弱</span>
+        <span class="focus-tag tag-protect">膝盖保护</span>
+      </div>
+      <p style="margin-top:8px;font-size:13px;color:var(--text-secondary)">所有动作均选择膝盖友好的变体。不跳跃、不冲击。</p>
+    </div>
+
+    <!-- 间隙训练动作库 -->
+    <div class="card">
+      <h3>学校间隙训练 · 动作库</h3>
+      <p class="card-sub-text">每小时挑一组，10-20 分钟搞定。每组标了肌群和难度。</p>
+      <div class="exercise-section">
+        <h4 class="exercise-group-title">背部</h4>
+        <div class="exercise-grid" id="exBack"></div>
+      </div>
+      <div class="exercise-section">
+        <h4 class="exercise-group-title">胸部</h4>
+        <div class="exercise-grid" id="exChest"></div>
+      </div>
+      <div class="exercise-section">
+        <h4 class="exercise-group-title">腿部（膝盖友好）</h4>
+        <div class="exercise-grid" id="exLegs"></div>
+      </div>
+      <div class="exercise-section">
+        <h4 class="exercise-group-title">弹跳专项（低冲击）</h4>
+        <div class="exercise-grid" id="exJump"></div>
+      </div>
+    </div>
+
+    <!-- 跟练博主推荐 -->
+    <div class="card card-coach">
+      <h3>推荐跟练博主</h3>
+      <p class="card-sub-text">B站搜索即可跟练，全都是膝盖友好的内容</p>
+      <div class="coach-list" id="coachList"></div>
+    </div>
+
+    <!-- 每周训练计划 -->
+    <div class="card">
+      <h3>本周训练安排</h3>
+      <div class="week-plan" id="fitnessPlan"></div>
+    </div>
+
+    <!-- 弹跳进步自评 -->
+    <div class="card">
+      <h3>弹跳进步自评（每周）</h3>
+      <div class="form-row">
+        <label>这周的摸高/弹跳感觉如何？（1-10）</label>
+        <input type="range" id="jumpScore" min="1" max="10" value="5" style="width:100%">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-muted)">
+          <span>1 · 没感觉</span><span>5 · 有进步</span><span>10 · 明显提升</span>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="jumpScoreSave">记录本周自评</button>
+    </div>
+
+    <!-- 今日训练打卡 -->
+    <div class="card">
+      <h3>今日训练打卡</h3>
+      <div class="form-row">
+        <label>训练类型</label>
+        <select id="fitnessType">
+          <option value="school-gap">学校间隙训练（10-20min）</option>
+          <option value="evening">晚间完整训练（30min）</option>
+          <option value="volleyball">排球实战</option>
+          <option value="rest">主动恢复/拉伸</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>训练时长（分钟）</label>
+        <input type="number" id="fitnessDuration" class="input-compact" value="30" min="0" max="120">
+      </div>
+      <div class="form-row">
+        <label>完成动作</label>
+        <textarea id="fitnessContent" class="input-compact" rows="2" placeholder="今天练了什么动作..."></textarea>
+      </div>
+      <button class="btn btn-primary" id="fitnessAddRecord">打卡</button>
+    </div>
+
+    <div class="card">
+      <h3>训练记录</h3>
+      <div class="log-list" id="fitnessLog"></div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 小狗 -->
+  <!-- ============================================================ -->
+  <section class="view" id="view-dog">
+    <div class="view-header">
+      <h1>小狗</h1>
+      <p class="view-sub">早晚遛狗 · 喂食 · 疫苗提醒</p>
+    </div>
+    <div class="card">
+      <div class="dog-photo-section">
+        <div class="dog-photo-frame">
+          <img src="assets/dog-photo.jpg" alt="老板和狗狗" class="dog-photo-img">
+        </div>
+        <div class="dog-photo-caption">我和狗狗 🐕</div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>狗狗信息</h3>
+      <div class="dog-info-row">
+        <div class="form-row">
+          <label>狗狗名字</label>
+          <input type="text" id="dogName" class="input-compact" placeholder="狗狗叫什么">
+        </div>
+        <div class="form-row">
+          <label>下次疫苗/体检</label>
+          <input type="date" id="dogVaccine">
+        </div>
+        <button class="btn btn-sm btn-primary" id="dogSaveInfo">保存</button>
+      </div>
+      <div class="checklist-block" id="dogChecklist">
+        <label class="check-item"><input type="checkbox" data-key="morningWalk"> 早晨遛狗 (7:30)</label>
+        <label class="check-item"><input type="checkbox" data-key="feedAM"> 早晨喂食</label>
+        <label class="check-item"><input type="checkbox" data-key="eveningWalk"> 晚上遛狗 (18:00)</label>
+        <label class="check-item"><input type="checkbox" data-key="feedPM"> 晚上喂食</label>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 缝纫 -->
+  <!-- ============================================================ -->
+  <section class="view" id="view-sewing">
+    <div class="view-header">
+      <h1>缝纫</h1>
+      <p class="view-sub">心理解压 · 做了就记一笔</p>
+    </div>
+    <div class="card">
+      <h3>缝纫项目</h3>
+      <div class="form-row-inline">
+        <input type="text" id="sewingInput" class="input-compact" placeholder="项目名称..." style="flex:1">
+        <input type="text" id="sewingStep" class="input-compact" placeholder="当前步骤...">
+        <button class="btn btn-sm btn-primary" id="sewingAdd">添加</button>
+      </div>
+      <div class="sewing-list" id="sewingList"></div>
+    </div>
+    <div class="card">
+      <h3>我的布料</h3>
+      <div class="form-row-inline">
+        <input type="text" id="fabricName" class="input-compact" placeholder="布料名称..." style="flex:1">
+        <input type="file" id="fabricPhoto" accept="image/*" capture="environment" class="file-input-mini">
+        <button class="btn btn-sm btn-primary" id="fabricAdd">添加</button>
+      </div>
+      <input type="text" id="fabricNotes" class="input-compact mt-8" placeholder="备注：颜色、材质、用途...">
+      <div id="fabricPreview" class="upload-preview" style="display:none"></div>
+      <div class="fabric-grid" id="fabricGrid"></div>
+    </div>
+    <div class="card">
+      <h3>想做的东西</h3>
+      <div class="form-row-inline">
+        <input type="text" id="wishTitle" class="input-compact" placeholder="想做什么..." style="flex:1">
+        <input type="file" id="wishPhoto" accept="image/*" capture="environment" class="file-input-mini">
+        <button class="btn btn-sm btn-primary" id="wishAdd">添加</button>
+      </div>
+      <input type="text" id="wishDesc" class="input-compact mt-8" placeholder="参考图、教程链接、想法...">
+      <div id="wishPreview" class="upload-preview" style="display:none"></div>
+      <div class="fabric-grid" id="wishGrid"></div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 短视频 -->
+  <!-- ============================================================ -->
+  <section class="view" id="view-video">
+    <div class="view-header">
+      <h1>短视频</h1>
+      <p class="view-sub">创意表达 · 随手记录你的视频项目</p>
+    </div>
+    <div class="card">
+      <h3>视频项目</h3>
+      <div class="form-row-inline">
+        <input type="text" id="videoInput" class="input-compact" placeholder="项目名称..." style="flex:1">
+        <input type="text" id="videoTopic" class="input-compact" placeholder="选题/主题...">
+        <button class="btn btn-sm btn-primary" id="videoAdd">添加</button>
+      </div>
+      <input type="text" id="videoNotes" class="input-compact mt-8" placeholder="脚本大纲、拍摄计划、剪辑思路...">
+      <div class="sewing-list" id="videoList"></div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 写小说 -->
+  <!-- ============================================================ -->
+  <section class="view" id="view-novel">
+    <div class="view-header">
+      <h1>写小说</h1>
+      <p class="view-sub">文字创作 · 每个故事都值得被写下</p>
+    </div>
+    <div class="card">
+      <h3>小说项目</h3>
+      <div class="form-row-inline">
+        <input type="text" id="novelInput" class="input-compact" placeholder="书名/标题..." style="flex:1">
+        <input type="text" id="novelGenre" class="input-compact" placeholder="类型/风格...">
+        <button class="btn btn-sm btn-primary" id="novelAdd">添加</button>
+      </div>
+      <div class="form-row-inline mt-8">
+        <input type="text" id="novelWords" class="input-compact" placeholder="当前字数..." style="max-width:120px">
+        <input type="text" id="novelGoal" class="input-compact" placeholder="目标字数..." style="max-width:120px">
+        <input type="text" id="novelOutline" class="input-compact" placeholder="章节目录/大纲..." style="flex:1">
+      </div>
+      <div class="sewing-list" id="novelList"></div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 随心记 -->
+  <!-- ============================================================ -->
+  <section class="view" id="view-memo">
+    <div class="view-header">
+      <h1>随心记</h1>
+      <p class="view-date" id="memoDate"></p>
+    </div>
+    <div class="card">
+      <h3 id="memoTitle">今日随笔</h3>
+      <textarea id="memoInput" class="memo-textarea" placeholder="今天想记点什么...&#10;&#10;—— 可以是一段心情、一个想法、一句灵感 &#10;—— 也可以是今天做的小事、明天的提醒"></textarea>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+        <span id="memoSaved" style="color:var(--text-muted);font-size:12px"></span>
+        <span style="font-size:11px;color:var(--text-muted)">自动保存</span>
+      </div>
+    </div>
+    <div class="card">
+      <h3>历史记录</h3>
+      <div id="memoHistory">
+        <div class="material-empty">还没有历史记录</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 设置 -->
+  <!-- ============================================================ -->
+  <section class="view" id="view-settings">
+    <div class="view-header">
+      <h1>设置</h1>
+    </div>
+    <div class="card" id="installGuide">
+      <h3>📲 安装到手机桌面</h3>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:10px">安装后就像普通 App 一样打开，没有浏览器地址栏，离线也能用。</p>
+      <button class="btn btn-primary btn-sm" id="manualInstall" style="width:100%;margin-bottom:8px">一键安装 shedo</button>
+      <details style="font-size:12px;color:var(--text-muted)">
+        <summary style="cursor:pointer;color:var(--primary);font-weight:600">点不动？看手动步骤</summary>
+        <ol style="margin:8px 0 0 16px;line-height:1.8">
+          <li>用手机 <b>Chrome 浏览器</b> 打开当前页面</li>
+          <li>点右上角 <b>⋮</b> 菜单</li>
+          <li>找到 <b>「添加到主屏幕」</b></li>
+          <li>确认 → 桌面出现 shedo 图标 ✅</li>
+        </ol>
+        <p style="margin-top:6px;font-size:11px;color:var(--text-muted)">💡 一加自带浏览器如果不行，换 Chrome 一定可以。</p>
+      </details>
+    </div>
+    <div class="card">
+      <h3>🔤 字体大小</h3>
+      <p class="card-sub-text">拖拽调节整体字号，找到最舒适的阅读体验</p>
+      <div class="font-scale-row">
+        <button class="font-scale-btn" id="fontScaleDown" title="缩小">A-</button>
+        <span class="font-scale-label" id="fontScaleLabel">标准</span>
+        <button class="font-scale-btn" id="fontScaleUp" title="放大">A+</button>
+      </div>
+      <div class="font-scale-dots" id="fontScaleDots">
+        <span class="font-scale-dot"></span>
+        <span class="font-scale-dot"></span>
+        <span class="font-scale-dot active"></span>
+        <span class="font-scale-dot"></span>
+        <span class="font-scale-dot"></span>
+      </div>
+    </div>
+    <div class="card">
+      <h3>数据管理</h3>
+      <div class="setting-row">
+        <span>导出所有数据 (JSON)</span>
+        <button class="btn btn-outline btn-sm" id="exportData">导出</button>
+      </div>
+      <div class="setting-row">
+        <span>导入数据 (覆盖当前)</span>
+        <input type="file" id="importData" accept=".json">
+      </div>
+      <div class="setting-row danger">
+        <span>重置所有数据</span>
+        <button class="btn btn-danger btn-sm" id="resetData">重置</button>
+      </div>
+    </div>
+    <div class="card">
+      <h3>素材更新</h3>
+      <div class="setting-row">
+        <span>手动刷新考公素材</span>
+        <button class="btn btn-outline btn-sm" id="refreshMaterial">刷新</button>
+      </div>
+    </div>
+    <div class="card">
+      <h3>关于</h3>
+      <p style="color:var(--text-muted);font-size:13px">shedo · 她做 · 靓女出品<br>所有数据存储在浏览器本地 · 完整离线可用<br><span id="versionTag" style="color:var(--primary);font-weight:600"></span></p>
+    </div>
+  </section>
+
+</main>
+
+<div class="install-banner" id="installBanner">
+  <div class="install-banner-content">
+    <div class="install-banner-icon">
+      <svg viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#0d1f14"/><g transform="translate(24,21)"><path d="M-10,7 L-10,-1 Q-10,-4 -6,-5 L-5,-5 Q-2,-4 -1,-3 L0,-1 Q0,2 -1,4 Q-1,6 -2,6 Q-4,7 -5,7 Q-7,7 -8,7 Q-10,7 -10,7Z" stroke="#4a9e6b" stroke-width="1.2" fill="none"/><path d="M10,7 L10,-1 Q10,-4 6,-5 L5,-5 Q2,-4 1,-3 L0,-1 Q0,2 1,4 Q1,6 2,6 Q4,7 5,7 Q7,7 8,7 Q10,7 10,7Z" stroke="#4a9e6b" stroke-width="1.2" fill="none"/><path d="M0,-6 L0,-10" stroke="#6ecf8e" stroke-width="1.2" stroke-linecap="round"/></g></svg>
+    </div>
+    <div class="install-banner-text">
+      <div style="font-weight:600;font-size:14px">添加到主屏幕</div>
+      <div style="font-size:12px;color:var(--text-muted)">随时随地打开，离线也能用</div>
+    </div>
+    <button class="btn btn-primary" id="installBtn" style="padding:8px 16px;font-size:13px">安装</button>
+    <button id="installDismiss" style="background:none;border:none;font-size:18px;padding:4px 8px;color:var(--text-muted)">&times;</button>
+  </div>
+</div>
+
+<script src="js/app.js?v=7"></script>
+</body>
+</html>
