@@ -283,6 +283,52 @@ input,select,textarea{font-family:inherit;font-size:14px}
 .material-date-pill.has-data::after{content:' ●';color:var(--primary);font-size:8px}
 .material-date-pill.active.has-data::after{color:#fff}
 
+/* 江苏素材库 */
+.jiangsu-cat-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.jiangsu-cat-btn{
+  padding:6px 14px;border:1px solid var(--border);border-radius:20px;
+  background:var(--bg-card);color:var(--text-secondary);font-size:0.8rem;
+  cursor:pointer;transition:all .2s;
+}
+.jiangsu-cat-btn:hover{border-color:var(--primary);color:var(--primary)}
+.jiangsu-cat-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+
+.jiangsu-content{margin-top:12px}
+.jiangsu-item{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:12px;
+  padding:16px;margin-bottom:12px;transition:box-shadow .2s;
+}
+.jiangsu-item:hover{box-shadow:0 2px 12px rgba(0,0,0,0.06)}
+.jiangsu-item-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.jiangsu-item-num{
+  width:28px;height:28px;border-radius:50%;background:var(--primary);
+  color:#fff;display:flex;align-items:center;justify-content:center;
+  font-size:0.8rem;font-weight:700;flex-shrink:0;
+}
+.jiangsu-item-title{font-size:1.05rem;font-weight:600;color:var(--text)}
+.jiangsu-item-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.jiangsu-tag{
+  padding:2px 10px;border-radius:12px;background:rgba(42,105,75,0.08);
+  color:var(--primary);font-size:0.7rem;
+}
+.jiangsu-item-summary{
+  font-size:0.85rem;line-height:1.7;color:var(--text-secondary);margin-bottom:12px;
+}
+.jiangsu-item-points{
+  background:var(--bg-card-muted);border-radius:8px;padding:12px 14px;margin-bottom:10px;
+}
+.jiangsu-points-title{
+  font-size:0.75rem;font-weight:600;color:var(--primary);text-transform:uppercase;
+  letter-spacing:0.5px;margin-bottom:6px;
+}
+.jiangsu-item-points ul{margin:0;padding-left:18px}
+.jiangsu-item-points li{
+  font-size:0.8rem;line-height:1.7;color:var(--text-secondary);margin-bottom:3px;
+}
+.jiangsu-item-usage{
+  font-size:0.78rem;color:var(--text-muted);padding-top:8px;border-top:1px dashed var(--border);
+}
+
 /* 随心记 */
 .memo-textarea{
   width:100%;min-height:180px;box-sizing:border-box;

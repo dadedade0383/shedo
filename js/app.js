@@ -708,6 +708,77 @@ function saveMaterialCache(data){
   localStorage.setItem('wb_material_cache', JSON.stringify(data));
 }
 
+/* ===== 江苏素材库 ===== */
+let jiangsuData = null;
+let jiangsuCurrentCat = 'economy';
+
+function renderJiangsuLibrary(){
+  if(jiangsuData){
+    renderJiangsuCategory(jiangsuCurrentCat);
+    return;
+  }
+  fetch('data/jiangsu-materials.json')
+    .then(r=>r.json())
+    .then(data=>{
+      jiangsuData = data;
+      renderJiangsuCategory(jiangsuCurrentCat);
+      setupJiangsuTabs();
+    })
+    .catch(()=>{
+      $('#jiangsuContent').innerHTML = '<div class="material-empty">江苏素材库加载失败</div>';
+    });
+}
+
+function setupJiangsuTabs(){
+  $('#jiangsuCatTabs').addEventListener('click',e=>{
+    const btn = e.target.closest('.jiangsu-cat-btn');
+    if(!btn) return;
+    const cat = btn.dataset.cat;
+    $$('#jiangsuCatTabs .jiangsu-cat-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    jiangsuCurrentCat = cat;
+    renderJiangsuCategory(cat);
+  });
+}
+
+function renderJiangsuCategory(catId){
+  const container = $('#jiangsuContent');
+  if(!jiangsuData){
+    container.innerHTML = '<div class="material-empty">加载中...</div>';
+    return;
+  }
+  const cat = jiangsuData.categories.find(c=>c.id===catId);
+  if(!cat){
+    container.innerHTML = '<div class="material-empty">暂无该分类数据</div>';
+    return;
+  }
+
+  let html = '';
+  cat.items.forEach((item, idx)=>{
+    const tagsHtml = item.tags.map(t=>`<span class="jiangsu-tag">${escapeHTML(t)}</span>`).join('');
+    const pointsHtml = item.keyPoints.map(p=>`<li>${escapeHTML(p)}</li>`).join('');
+    html += `
+      <div class="jiangsu-item">
+        <div class="jiangsu-item-header">
+          <div class="jiangsu-item-num">${idx+1}</div>
+          <div class="jiangsu-item-title">${escapeHTML(item.title)}</div>
+        </div>
+        <div class="jiangsu-item-tags">${tagsHtml}</div>
+        <div class="jiangsu-item-summary">${escapeHTML(item.summary)}</div>
+        <div class="jiangsu-item-points">
+          <div class="jiangsu-points-title">关键数据 / 亮点</div>
+          <ul>${pointsHtml}</ul>
+        </div>
+        <div class="jiangsu-item-usage">
+          <strong>适用主题：</strong>${escapeHTML(item.usage)}
+        </div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+}
+
 function setupExam(){
   $('#examSaveSettings').addEventListener('click',()=>{
     state.exam.type = $('#examType').value;
@@ -752,6 +823,7 @@ function setupExam(){
     if(panel){
       panel.classList.add('active');
       if(tab==='exam-material') renderMaterialLibrary();
+      if(tab==='exam-jiangsu') renderJiangsuLibrary();
     }
   });
 }

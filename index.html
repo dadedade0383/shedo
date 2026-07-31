@@ -207,6 +207,7 @@
     <div class="tab-bar" id="examTabs">
       <button class="tab-btn active" data-tab="exam-study">刷题学习</button>
       <button class="tab-btn" data-tab="exam-material">申论素材库</button>
+      <button class="tab-btn" data-tab="exam-jiangsu">江苏专题</button>
     </div>
 
     <!-- 刷题学习面板 -->
@@ -278,8 +279,23 @@
       </div>
       <div class="card" style="text-align:center;color:var(--text-muted);font-size:12px">
         素材每日自动更新 | 当前查看：<span id="materialUpdateTime">--</span>
-        <button class="btn btn-outline btn-sm" id="materialRefreshBtn" style="display:block;margin:6px auto 0">�� 刷新当前日期素材</button>
+        <button class="btn btn-outline btn-sm" id="materialRefreshBtn" style="display:block;margin:6px auto 0">刷新当前日期素材</button>
       </div>
+    </div>
+
+    <!-- 江苏专题面板 -->
+    <div class="tab-panel" id="panel-exam-jiangsu">
+      <div class="card">
+        <h3>江苏素材库 <span class="card-badge">考场直接用</span></h3>
+        <p class="card-sub-text">四大主题 · 11个典型案例 · 含关键词标签和用法提示</p>
+        <div class="jiangsu-cat-tabs" id="jiangsuCatTabs">
+          <button class="jiangsu-cat-btn active" data-cat="economy">经济发展</button>
+          <button class="jiangsu-cat-btn" data-cat="ecology">生态保护</button>
+          <button class="jiangsu-cat-btn" data-cat="livelihood">民生保障</button>
+          <button class="jiangsu-cat-btn" data-cat="culture">文化传承</button>
+        </div>
+      </div>
+      <div class="jiangsu-content" id="jiangsuContent"></div>
     </div>
   </section>
 
