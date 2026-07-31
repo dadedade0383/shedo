@@ -625,17 +625,7 @@ function selectMaterialDate(ds){
   const d = new Date(ds);
   $('#materialDate').textContent = (d.getMonth()+1)+'月'+d.getDate()+'日';
 
-  // 先从缓存取
-  const cached = localStorage.getItem('wb_material_'+ds);
-  if(cached){
-    try{
-      const data = JSON.parse(cached);
-      renderMaterialContent(data);
-      $('#materialUpdateTime').textContent = data.updatedAt || ds;
-      return;
-    }catch(e){}
-  }
-  // 缓存没有，试网络
+  // 网络优先，缓存兜底
   fetch('data/daily-brief-'+ds+'.json')
     .then(r=>{ if(!r.ok) throw new Error('nf'); return r.json(); })
     .then(data=>{
@@ -650,6 +640,16 @@ function selectMaterialDate(ds){
       $('#materialUpdateTime').textContent = data.updatedAt || ds;
     })
     .catch(()=>{
+      // 网络失败，降级到缓存
+      const cached = localStorage.getItem('wb_material_'+ds);
+      if(cached){
+        try{
+          const data = JSON.parse(cached);
+          renderMaterialContent(data);
+          $('#materialUpdateTime').textContent = (data.updatedAt || ds) + ' (缓存)';
+          return;
+        }catch(e){}
+      }
       if(ds === today()) showMaterialEmpty();
       else{
         $('#materialWordsContent').innerHTML = '<div class="material-empty">该日期暂无素材</div>';

@@ -1,7 +1,7 @@
 // 根据 SW 自身位置推算部署根路径（兼容 GitHub Pages 子目录 /shedo/）
 const BASE = new URL('.', self.location.href).pathname.replace(/\/$/,'');
 
-const CACHE = 'shedo-v11';
+const CACHE = 'shedo-v12';
 const FILES = [
   BASE + '/',
   BASE + '/index.html',
