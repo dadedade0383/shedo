@@ -44,19 +44,56 @@ HEADERS = {
 OPINION_COLUMNS = ["今日谈", "人民论坛", "人民时评", "思想纵横", "评论员", "编辑手记",
                     "金台随笔", "大家谈", "暖闻热评", "连线评论员"]
 
-# 申论方向关键词
-SHENLUN_KW = [
-    "实干", "奋斗", "坚持", "创新", "改革", "民生", "基层", "治理",
-    "青年", "担当", "作风", "高质量", "人民", "乡村", "生态", "科技",
-    "营商", "法治", "开放", "发展", "安全", "就业", "教育", "养老",
-    "文化", "初心", "使命", "斗争", "公平", "服务", "数字", "绿色",
-    "协调", "共享", "文明", "精神", "信念", "攻坚", "突破", "扎根",
-    "为民", "政绩", "奉献", "拼搏", "使命", "担当", "清廉", "群众",
-    "产业", "转型", "保障", "普惠", "福祉", "和谐", "合力", "共建",
-    # 求是理论风格关键词
-    "自信", "特色", "战略", "强国", "复兴", "制度", "探索", "协商",
-    "民主", "团结", "领域", "体系", "思想", "理论", "大局", "稳健"
+# 金句方向关键词 —— 文化修身 + 政治理论 + 实干，三类平衡
+CULTURE_KW = [
+    "光华", "气韵", "风骨", "品格", "修养", "境界", "格局", "胸怀", "情怀",
+    "气节", "精神", "坚守", "耕耘", "岁月", "时光", "热爱", "专注", "匠心",
+    "传承", "淡泊", "宁静", "从容", "温润", "厚重", "诗意", "远方", "初心",
+    "理想", "志向", "信念", "力量", "光芒", "坚韧", "执着", "沉静", "内敛",
+    "谦逊", "朴实", "纯粹", "脊梁", "灵魂", "根脉", "血脉", "薪火", "文明",
+    "家风", "礼仪", "德行", "智慧", "良知", "道义", "仁爱", "大义", "操守",
+    "心性", "涵养", "修为", "磨砺", "淬炼", "积淀", "沉淀", "滋养", "浸润",
+    "熏陶", "启迪", "觉醒", "通透", "澄明", "清朗", "清雅", "清正", "正气",
+    "浩气", "骨气", "志气", "胆气", "锐气", "朝气", "灵气", "洗礼", "净化",
+    "蜕变", "绽放", "芬芳", "馨香", "温度", "底色", "烟火",
+    "淡泊明志", "宁静致远", "厚德载物", "自强不息", "知行合一",
+    "修身齐家", "格物致知", "诚意正心", "慎独", "克己", "奉公",
 ]
+
+THEORY_KW = [
+    "共同体", "制度", "战略", "强国", "复兴", "思想", "理论", "体系",
+    "大局", "民主", "协商", "团结", "自信", "特色", "探索", "领域",
+    "马克思主义", "治理体系", "现代化", "全过程", "社会主义", "领导核心",
+    "旗帜", "道路", "方向", "立场", "纲领", "路线", "方针", "政策",
+    "部署", "决策", "统筹", "协调", "深化", "完善", "健全", "机制",
+    "体制", "结构", "功能", "效能", "优势", "特征", "本质", "内涵",
+    "外延", "逻辑", "规律", "趋势", "大势", "全局", "长远", "根本",
+    "核心", "关键", "重点", "基础", "前提", "保障", "支撑", "引领",
+    "驱动", "赋能", "激活", "激发", "凝聚", "汇聚", "融合", "整合",
+    "优化", "升级", "转型", "变革", "跨越", "跃升", "提升", "提高",
+    "增强", "强化", "巩固", "夯实",
+]
+
+ACTION_KW = [
+    "实干", "奋斗", "坚持", "创新", "改革", "民生", "基层", "治理",
+    "担当", "作风", "高质量", "发展", "科技", "产业", "转型", "数据",
+    "增长", "突破", "攻坚", "成效", "成果", "项目", "工程", "建设",
+    "推进", "落实", "行动", "实践", "举措", "措施", "服务", "保障",
+    "就业", "营商", "数字", "绿色", "乡村", "振兴", "生态", "开放",
+    "共享", "协调", "公平", "安全", "稳定", "和谐", "普惠", "福祉",
+    "效益", "效率", "质量", "速度", "进度", "力度", "深度", "广度",
+    "精度", "准度", "温度", "满意度", "获得感", "幸福感", "安全感",
+    "覆盖率", "普及率", "合格率", "达标率", "完成率", "实现率",
+    "投入", "产出", "收益", "回报", "贡献", "价值", "意义", "作用",
+    "影响", "效果", "绩效", "业绩", "成绩", "成就", "功业", "功绩",
+    "实绩", "实事", "好事", "难事", "急事", "要事", "大事", "小事",
+]
+
+KW_CATEGORIES = {
+    "culture": CULTURE_KW,
+    "theory":  THEORY_KW,
+    "action":  ACTION_KW,
+}
 
 # 江苏地名（用于筛选本地案例）
 JIANGSU_PLACES = ["江苏", "南京", "苏州", "无锡", "常州", "镇江", "扬州",
@@ -89,9 +126,13 @@ def clean_text(text):
     text = text.replace("\u00a0", " ").replace("\u200b", "")
     text = text.replace("&nbsp;", " ").replace("&ldquo;", "\u201c").replace("&rdquo;", "\u201d")
     text = text.replace("&mdash;", "\u2014").replace("&ndash;", "\u2013")
+    # 去掉 HTML 标签残余
+    text = re.sub(r"<[^>]+>", "", text)
     text = re.sub(r"\s+", " ", text).strip()
     # 去掉求是来源元数据
     text = re.sub(r"来源：《求是》\d{4}/\d{2}\s*作者：\S+\s*\d{4}-\d{2}-\d{2}\s*\d{2}:\d{2}:\d{2}\s*", "", text)
+    # 去掉"※ 习近平"这种标记
+    text = re.sub(r"※\s*\S+", "", text)
     text = re.sub(r"\s+", " ", text).strip()
     return text
 
@@ -149,78 +190,135 @@ def is_opinion_article(title):
 
 
 def extract_sentences(text):
-    """从文本中提取完整句子"""
+    """从文本中提取完整句子，过滤低质量内容"""
     sentences = re.split(r"[。！；\n]", text)
     result = []
     for s in sentences:
         s = s.strip()
-        # 太短或太长都不合适
-        if len(s) < 10 or len(s) > 200:
+        # 长度过滤
+        if len(s) < 12 or len(s) > 200:
             continue
-        # 必须含中文且非纯标题
+        # 必须含足够中文
         chinese_chars = len(re.findall(r"[\u4e00-\u9fff]", s))
-        if chinese_chars < 8:
+        if chinese_chars < 10:
             continue
-        # 排除元数据/来源信息
+        # 排除元数据
         if re.match(r"^[\d年月日记者摄报道责编]", s):
             continue
-        if re.match(r"^(来源|本期导读|本期发表)", s):
+        if re.match(r"^(来源|本期导读|本期发表|摘要|关键词)", s):
             continue
         if "本报" in s[:10] and len(s) < 30:
+            continue
+        # 排除求是编辑说明
+        if "《求是》杂志编辑部" in s and len(s) < 50:
+            continue
+        # 排除标题重复（求是文章标题经常在正文中重复）
+        if s.count(" ") < 1 and len(s) > 40 and " " not in s[:20]:
+            # 可能是一个长标题，检查是否重复
+            pass
+        # 排除纯英文/数字
+        if re.match(r"^[A-Za-z0-9\s]+$", s):
             continue
         result.append(s)
     return result
 
 
+def classify_sentence(s):
+    """判断句子属于哪一类，返回 (category, score)"""
+    c = sum(1 for kw in CULTURE_KW if kw in s)
+    t = sum(1 for kw in THEORY_KW if kw in s)
+    a = sum(1 for kw in ACTION_KW if kw in s)
+    scores = [("culture", c), ("theory", t), ("action", a)]
+    best = max(scores, key=lambda x: x[1])
+    if best[1] == 0:
+        return None, 0
+    return best[0], best[1]
+
+
 def extract_words(entries):
-    """从多源 RSS 提取申论金句（求是优先但限制数量，兼顾人民日报）"""
-    words = []
+    """从多源 RSS 提取金句，文化修身 + 政治理论 + 实干 三类平衡"""
+    candidates = []
     seen = set()
-    max_qstheory = 10  # 求是上限 10 条，与人民日报各半
 
-    # 重排：求是优先，然后是人民日报评论，最后是其他
-    prioritized = sorted(entries, key=lambda e: (
-        0 if e["source"] == "求是" else (1 if is_opinion_article(e["title"]) else 2)
-    ))
-
-    for entry in prioritized:
-        qs_count = sum(1 for w in words if w["source"].startswith("求是"))
-
-        # 只看评论类或求是，非评论类作为补充
+    for entry in entries:
         is_qstheory = entry["source"] == "求是"
         is_opinion = is_opinion_article(entry["title"])
 
-        if is_qstheory and qs_count >= max_qstheory:
-            continue  # 求是达上限，跳过剩余求是
+        # 只从评论/观点/求是/人文类文章提取
         if not is_qstheory and not is_opinion:
-            continue  # 非评论非求是：跳过
+            # 非评论非求是，但含文化关键词的也保留
+            pass  # 不跳过，文化类可能在非评论文章里
 
-        combined = f"{entry['title']} {entry['desc']}"
-        sentences = extract_sentences(combined)
-        article_count = 0
+        # 从描述中提取句子（不用 title 避免标题混入正文）
+        sentences = extract_sentences(entry["desc"])
+
         for s in sentences:
-            if article_count >= 2:
-                break
-            if is_qstheory and qs_count >= max_qstheory:
-                break  # 求是达上限，当前文章不再取
-            if any(kw in s for kw in SHENLUN_KW):
-                key = s[:30]
-                if key not in seen:
-                    seen.add(key)
-                    words.append({
-                        "text": s + "。",
-                        "source": entry["shortSource"],
-                        "url": entry["link"]
-                    })
-                    article_count += 1
-                    if is_qstheory:
-                        qs_count += 1
-            if len(words) >= 20:
-                break
-        if len(words) >= 20:
-            break
+            # 去重
+            key = s[:30]
+            if key in seen:
+                continue
+            seen.add(key)
 
-    return words
+            # 分类
+            cat, score = classify_sentence(s)
+            if cat is None:
+                continue
+
+            candidates.append({
+                "text": s + "。",
+                "source": entry["shortSource"],
+                "url": entry["link"],
+                "category": cat,
+                "score": score,
+            })
+
+    # 按类别分组，每类内按得分排序
+    by_cat = {"culture": [], "theory": [], "action": []}
+    for c in candidates:
+        by_cat[c["category"]].append(c)
+
+    for cat in by_cat:
+        by_cat[cat].sort(key=lambda x: x["score"], reverse=True)
+
+    # 配额提取：每类最多 7 条，总量 20
+    TARGET_TOTAL = 20
+    PER_CAT_TARGET = 7
+
+    result = []
+    used_keys = set()
+
+    # 第一轮：每类取前 PER_CAT_TARGET
+    for cat in ["culture", "theory", "action"]:
+        for c in by_cat[cat][:PER_CAT_TARGET]:
+            k = c["text"][:30]
+            if k not in used_keys:
+                used_keys.add(k)
+                result.append({
+                    "text": c["text"],
+                    "source": c["source"],
+                    "url": c["url"],
+                })
+
+    # 如果总量不足 20，从剩余候选补充（按得分）
+    if len(result) < TARGET_TOTAL:
+        remaining = []
+        for cat in by_cat:
+            for c in by_cat[cat][PER_CAT_TARGET:]:
+                k = c["text"][:30]
+                if k not in used_keys:
+                    remaining.append(c)
+        remaining.sort(key=lambda x: x["score"], reverse=True)
+        for c in remaining[:TARGET_TOTAL - len(result)]:
+            k = c["text"][:30]
+            if k not in used_keys:
+                used_keys.add(k)
+                result.append({
+                    "text": c["text"],
+                    "source": c["source"],
+                    "url": c["url"],
+                })
+
+    return result[:TARGET_TOTAL]
 
 
 # ── 提取案例 ──────────────────────────────────────────
