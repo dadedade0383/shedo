@@ -757,6 +757,9 @@ function renderJiangsuCategory(catId){
   cat.items.forEach((item, idx)=>{
     const tagsHtml = item.tags.map(t=>`<span class="jiangsu-tag">${escapeHTML(t)}</span>`).join('');
     const pointsHtml = item.keyPoints.map(p=>`<li>${escapeHTML(p)}</li>`).join('');
+    const sourceHtml = item.url
+      ? `<a href="${escapeHTML(item.url)}" target="_blank" rel="noopener" class="m-link">${escapeHTML(item.source||'权威来源')} ↗</a>`
+      : (item.source ? escapeHTML(item.source) : '');
     html += `
       <div class="jiangsu-item">
         <div class="jiangsu-item-header">
@@ -772,6 +775,7 @@ function renderJiangsuCategory(catId){
         <div class="jiangsu-item-usage">
           <strong>适用主题：</strong>${escapeHTML(item.usage)}
         </div>
+        ${sourceHtml ? `<div class="jiangsu-item-source">来源：${sourceHtml}</div>` : ''}
       </div>
     `;
   });

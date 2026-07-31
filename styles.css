@@ -329,6 +329,22 @@ input,select,textarea{font-family:inherit;font-size:14px}
   font-size:0.78rem;color:var(--text-muted);padding-top:8px;border-top:1px dashed var(--border);
 }
 
+/* 江苏专题来源链接 */
+.jiangsu-item-source {
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border-light);
+  padding-top: 6px;
+}
+.jiangsu-item-source a {
+  color: var(--accent);
+  text-decoration: none;
+}
+.jiangsu-item-source a:hover {
+  text-decoration: underline;
+}
+
 /* 随心记 */
 .memo-textarea{
   width:100%;min-height:180px;box-sizing:border-box;
