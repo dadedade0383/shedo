@@ -176,7 +176,7 @@ def extract_words(entries):
     """从多源 RSS 提取申论金句（求是优先但限制数量，兼顾人民日报）"""
     words = []
     seen = set()
-    max_qstheory = 5  # 求是上限 5 条
+    max_qstheory = 10  # 求是上限 10 条，与人民日报各半
 
     # 重排：求是优先，然后是人民日报评论，最后是其他
     prioritized = sorted(entries, key=lambda e: (
@@ -215,9 +215,9 @@ def extract_words(entries):
                     article_count += 1
                     if is_qstheory:
                         qs_count += 1
-            if len(words) >= 10:
+            if len(words) >= 20:
                 break
-        if len(words) >= 10:
+        if len(words) >= 20:
             break
 
     return words
