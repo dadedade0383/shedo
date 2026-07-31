@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
 每日申论素材自动抓取脚本
-数据源：feedx.net 聚合的人民日报 RSS（100 篇全文）
+数据源：feedx.net 聚合的人民日报 RSS（100 篇） + 求是 RSS（20 篇）
 GitHub Actions 每天北京时间 7:00 (UTC 23:00) 自动运行
 
 输出：data/daily-brief-{YYYY-MM-DD}.json
-- words: 申论金句（从评论/观点类文章中提取）
+- words: 申论金句（从评论/观点/理论文章中提取，含求是）
 - cases: 案例素材（从含数据/措施的报道中提取）
-- news: 时政要闻（从头版文章中提取）
+- news: 时政要闻（从人民日报头版提取）
 """
 
 import json
@@ -30,7 +30,11 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_DIR = os.path.join(SCRIPT_DIR, "..", "data")
 OUTPUT_FILE = os.path.join(OUTPUT_DIR, f"daily-brief-{TODAY}.json")
 
-FEED_URL = "https://feedx.net/rss/people.xml"
+# 多数据源
+FEED_SOURCES = [
+    ("https://feedx.net/rss/people.xml",    "人民日报"),
+    ("https://feedx.net/rss/qstheory.xml",  "求是"),
+]
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (compatible; shedo-bot/1.0; +https://github.com/dadedade0383/shedo)"
@@ -48,7 +52,10 @@ SHENLUN_KW = [
     "文化", "初心", "使命", "斗争", "公平", "服务", "数字", "绿色",
     "协调", "共享", "文明", "精神", "信念", "攻坚", "突破", "扎根",
     "为民", "政绩", "奉献", "拼搏", "使命", "担当", "清廉", "群众",
-    "产业", "转型", "保障", "普惠", "福祉", "和谐", "合力", "共建"
+    "产业", "转型", "保障", "普惠", "福祉", "和谐", "合力", "共建",
+    # 求是理论风格关键词
+    "自信", "特色", "战略", "强国", "复兴", "制度", "探索", "协商",
+    "民主", "团结", "领域", "体系", "思想", "理论", "大局", "稳健"
 ]
 
 # 江苏地名（用于筛选本地案例）
@@ -83,25 +90,28 @@ def clean_text(text):
     text = text.replace("&nbsp;", " ").replace("&ldquo;", "\u201c").replace("&rdquo;", "\u201d")
     text = text.replace("&mdash;", "\u2014").replace("&ndash;", "\u2013")
     text = re.sub(r"\s+", " ", text).strip()
+    # 去掉求是来源元数据
+    text = re.sub(r"来源：《求是》\d{4}/\d{2}\s*作者：\S+\s*\d{4}-\d{2}-\d{2}\s*\d{2}:\d{2}:\d{2}\s*", "", text)
+    text = re.sub(r"\s+", " ", text).strip()
     return text
 
 
 # ── 网络请求 ──────────────────────────────────────────
 
-def fetch_rss(url):
-    """获取 RSS 并解析"""
+def fetch_rss(url, source_name):
+    """获取 RSS 并解析，给每条标记来源"""
     try:
         req = Request(url, headers=HEADERS)
         with urlopen(req, timeout=20) as resp:
             raw = resp.read().decode("utf-8", errors="replace")
     except (URLError, HTTPError, OSError) as e:
-        print(f"  [ERROR] 无法获取 {url}: {e}", file=sys.stderr)
+        print(f"  [ERROR] 无法获取 {source_name}: {e}", file=sys.stderr)
         return []
 
     try:
         root = ET.fromstring(raw)
     except ET.ParseError as e:
-        print(f"  [ERROR] RSS 解析失败: {e}", file=sys.stderr)
+        print(f"  [ERROR] {source_name} RSS 解析失败: {e}", file=sys.stderr)
         return []
 
     entries = []
@@ -116,7 +126,11 @@ def fetch_rss(url):
         d = clean_text(desc.text) if desc is not None and desc.text else ""
         p = clean_text(pubdate.text) if pubdate is not None and pubdate.text else ""
 
-        entries.append({"title": t, "desc": d, "link": l, "date": p})
+        entries.append({
+            "title": t, "desc": d, "link": l, "date": p,
+            "source": source_name,      # 标记来源
+            "shortSource": f"{source_name} {TODAY_SHORT}"
+        })
 
     return entries
 
@@ -147,8 +161,10 @@ def extract_sentences(text):
         chinese_chars = len(re.findall(r"[\u4e00-\u9fff]", s))
         if chinese_chars < 8:
             continue
-        # 排除纯引用、日期、记者名等
+        # 排除元数据/来源信息
         if re.match(r"^[\d年月日记者摄报道责编]", s):
+            continue
+        if re.match(r"^(来源|本期导读|本期发表)", s):
             continue
         if "本报" in s[:10] and len(s) < 30:
             continue
@@ -157,53 +173,54 @@ def extract_sentences(text):
 
 
 def extract_words(entries):
-    """从人民日报 RSS 提取申论金句"""
+    """从多源 RSS 提取申论金句（求是优先但限制数量，兼顾人民日报）"""
     words = []
     seen = set()
+    max_qstheory = 5  # 求是上限 5 条
 
-    # 优先级 1：评论类文章（每篇最多取 2 句，分散来源）
-    for entry in entries:
-        if not is_opinion_article(entry["title"]):
-            continue
+    # 重排：求是优先，然后是人民日报评论，最后是其他
+    prioritized = sorted(entries, key=lambda e: (
+        0 if e["source"] == "求是" else (1 if is_opinion_article(e["title"]) else 2)
+    ))
+
+    for entry in prioritized:
+        qs_count = sum(1 for w in words if w["source"].startswith("求是"))
+
+        # 只看评论类或求是，非评论类作为补充
+        is_qstheory = entry["source"] == "求是"
+        is_opinion = is_opinion_article(entry["title"])
+
+        if is_qstheory and qs_count >= max_qstheory:
+            continue  # 求是达上限，跳过剩余求是
+        if not is_qstheory and not is_opinion:
+            continue  # 非评论非求是：跳过
+
         combined = f"{entry['title']} {entry['desc']}"
         sentences = extract_sentences(combined)
         article_count = 0
         for s in sentences:
-            if article_count >= 2:  # 每篇评论最多 2 句
+            if article_count >= 2:
                 break
+            if is_qstheory and qs_count >= max_qstheory:
+                break  # 求是达上限，当前文章不再取
             if any(kw in s for kw in SHENLUN_KW):
                 key = s[:30]
                 if key not in seen:
                     seen.add(key)
                     words.append({
                         "text": s + "。",
-                        "source": f"人民日报 {TODAY_SHORT}",
+                        "source": entry["shortSource"],
                         "url": entry["link"]
                     })
                     article_count += 1
-
-    # 优先级 2：其他文章补足（每篇最多 1 句）
-    if len(words) < 6:
-        for entry in entries:
-            if is_opinion_article(entry["title"]):
-                continue
-            combined = f"{entry['title']} {entry['desc']}"
-            sentences = extract_sentences(combined)
-            for s in sentences:
-                if any(kw in s for kw in SHENLUN_KW):
-                    key = s[:30]
-                    if key not in seen:
-                        seen.add(key)
-                        words.append({
-                            "text": s + "。",
-                            "source": f"人民日报 {TODAY_SHORT}",
-                            "url": entry["link"]
-                        })
-                        break  # 每篇非评论最多 1 句
-            if len(words) >= 8:
+                    if is_qstheory:
+                        qs_count += 1
+            if len(words) >= 10:
                 break
+        if len(words) >= 10:
+            break
 
-    return words[:8]
+    return words
 
 
 # ── 提取案例 ──────────────────────────────────────────
@@ -214,7 +231,7 @@ def has_data(text):
 
 
 def extract_cases(entries):
-    """从人民日报 RSS 提取案例素材（优先江苏本地）"""
+    """从多源 RSS 提取案例素材（优先江苏本地）"""
     jiangsu_cases = []
     other_cases = []
 
@@ -227,8 +244,11 @@ def extract_cases(entries):
         if not has_data(combined):
             continue
 
-        # 排除评论类（那些归金句）
+        # 排除评论类
         if is_opinion_article(title):
+            continue
+        # 求是偏理论，案例价值低，跳过
+        if entry["source"] == "求是":
             continue
 
         # 排除纯会议/简报
@@ -248,7 +268,7 @@ def extract_cases(entries):
         case = {
             "title": clean_title,
             "desc": clean_desc,
-            "source": f"人民日报 {TODAY_SHORT}",
+            "source": entry["shortSource"],
             "url": entry["link"]
         }
 
@@ -266,13 +286,16 @@ def extract_cases(entries):
 # ── 提取时政 ──────────────────────────────────────────
 
 def extract_news(entries, case_titles=None):
-    """从头版文章提取时政要闻"""
+    """从头版文章提取时政要闻（仅人民日报，求是无头版）"""
     if case_titles is None:
         case_titles = set()
     news = []
     seen = set()
 
     for entry in entries:
+        # 时政只取人民日报头版
+        if entry["source"] != "人民日报":
+            continue
         title = entry["title"]
         # 取头版
         if not re.match(r"0[1-2]版", title):
@@ -298,7 +321,7 @@ def extract_news(entries, case_titles=None):
             seen.add(key)
             news.append({
                 "text": clean_title,
-                "source": f"人民日报 {TODAY_SHORT}",
+                "source": entry["shortSource"],
                 "date": TODAY,
                 "url": entry["link"]
             })
@@ -312,35 +335,44 @@ def main():
     print(f"\n{'='*60}")
     print(f"  shed 每日申论素材自动抓取")
     print(f"  日期: {TODAY}")
-    print(f"  数据源: {FEED_URL}")
+    print(f"  数据源: 人民日报 + 求是")
     print(f"{'='*60}\n")
 
-    # 获取人民日报 RSS
-    entries = fetch_rss(FEED_URL)
-    if not entries:
-        print("[ERROR] 无法获取人民日报 RSS，退出", file=sys.stderr)
+    # 获取所有 RSS 源
+    all_entries = []
+    for url, name in FEED_SOURCES:
+        entries = fetch_rss(url, name)
+        if entries:
+            all_entries.extend(entries)
+            print(f"  [{name}] {len(entries)} 篇")
+        else:
+            print(f"  [{name}] 获取失败，跳过")
+
+    if not all_entries:
+        print("[ERROR] 所有数据源均获取失败，退出", file=sys.stderr)
         return 1
 
-    print(f"  获取到 {len(entries)} 篇文章\n")
+    print(f"\n  总计 {len(all_entries)} 篇文章\n")
 
     # 分类统计
-    opinion_count = sum(1 for e in entries if is_opinion_article(e["title"]))
-    jiangsu_count = sum(1 for e in entries
+    opinion_count = sum(1 for e in all_entries
+                        if is_opinion_article(e["title"]) or e["source"] == "求是")
+    jiangsu_count = sum(1 for e in all_entries
                         if any(p in f"{e['title']} {e['desc']}" for p in JIANGSU_PLACES))
-    print(f"  其中评论类: {opinion_count} 篇, 江苏相关: {jiangsu_count} 篇\n")
+    print(f"  其中理论/评论类: {opinion_count} 篇, 江苏相关: {jiangsu_count} 篇\n")
 
     # 提取
     print("[1/3] 提取申论金句...")
-    words = extract_words(entries)
+    words = extract_words(all_entries)
     print(f"      共 {len(words)} 条")
 
     print("[2/3] 提取案例素材...")
-    cases = extract_cases(entries)
+    cases = extract_cases(all_entries)
     print(f"      共 {len(cases)} 条")
 
     print("[3/3] 提取时政要闻...")
     case_titles = {c["title"][:20] for c in cases}
-    news = extract_news(entries, case_titles)
+    news = extract_news(all_entries, case_titles)
     print(f"      共 {len(news)} 条")
 
     # 写入 JSON
