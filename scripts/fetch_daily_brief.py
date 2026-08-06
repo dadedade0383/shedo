@@ -176,6 +176,29 @@ def fetch_rss(url, source_name):
     return entries
 
 
+# ── 跨日去重 ──────────────────────────────────────────
+
+def load_recent_word_keys(days=7):
+    """读取最近 N 天的素材文件，收集已出现过的金句 key（前30字符）"""
+    used_keys = set()
+    for i in range(1, days + 1):  # 从1开始，跳过今天
+        d = datetime.now(TZ_BEIJING) - timedelta(days=i)
+        ds = d.strftime("%Y-%m-%d")
+        path = os.path.join(OUTPUT_DIR, f"daily-brief-{ds}.json")
+        if not os.path.exists(path):
+            continue
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            for w in data.get("words", []):
+                key = w.get("text", "")[:30]
+                if key:
+                    used_keys.add(key)
+        except (json.JSONDecodeError, OSError):
+            continue
+    return used_keys
+
+
 # ── 提取金句 ──────────────────────────────────────────
 
 def is_opinion_article(title):
@@ -235,8 +258,12 @@ def classify_sentence(s):
     return best[0], best[1]
 
 
-def extract_words(entries):
-    """从多源 RSS 提取金句，文化修身 + 政治理论 + 实干 三类平衡"""
+def extract_words(entries, exclude_keys=None):
+    """从多源 RSS 提取金句，文化修身 + 政治理论 + 实干 三类平衡
+    exclude_keys: 跨日去重，已出现过的金句 key 集合
+    """
+    if exclude_keys is None:
+        exclude_keys = set()
     candidates = []
     seen = set()
 
@@ -253,9 +280,11 @@ def extract_words(entries):
         sentences = extract_sentences(entry["desc"])
 
         for s in sentences:
-            # 去重
+            # 去重（当日 + 跨日）
             key = s[:30]
             if key in seen:
+                continue
+            if key in exclude_keys:
                 continue
             seen.add(key)
 
@@ -452,6 +481,11 @@ def main():
 
     print(f"\n  总计 {len(all_entries)} 篇文章\n")
 
+    # 跨日去重：加载最近 7 天已用金句
+    recent_keys = load_recent_word_keys(7)
+    if recent_keys:
+        print(f"  跨日去重: 排除最近7天已用 {len(recent_keys)} 条金句\n")
+
     # 分类统计
     opinion_count = sum(1 for e in all_entries
                         if is_opinion_article(e["title"]) or e["source"] == "求是")
@@ -461,8 +495,14 @@ def main():
 
     # 提取
     print("[1/3] 提取申论金句...")
-    words = extract_words(all_entries)
-    print(f"      共 {len(words)} 条")
+    words = extract_words(all_entries, exclude_keys=recent_keys)
+    # 降级：7天去重后不足15条，缩窄到3天再试
+    if len(words) < 15:
+        print(f"      仅 {len(words)} 条，缩窄去重窗口到3天重试...")
+        recent_keys_3d = load_recent_word_keys(3)
+        words = extract_words(all_entries, exclude_keys=recent_keys_3d)
+        print(f"      重试后 {len(words)} 条")
+    print(f"      最终 {len(words)} 条")
 
     print("[2/3] 提取案例素材...")
     cases = extract_cases(all_entries)
