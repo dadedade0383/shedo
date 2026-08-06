@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
 每日申论素材自动抓取脚本
-数据源：feedx.net 聚合的人民日报 RSS（100 篇） + 求是 RSS（20 篇）
+数据源：feedx.net 人民日报 RSS（100 篇） + 求是官网直抓（最新 15 篇）
 GitHub Actions 每天北京时间 7:00 (UTC 23:00) 自动运行
 
 输出：data/daily-brief-{YYYY-MM-DD}.json
-- words: 申论金句（从评论/观点/理论文章中提取，含求是）
+- words: 申论金句（文化修身+政治理论+实干 三类平衡，跨日去重）
 - cases: 案例素材（从含数据/措施的报道中提取）
 - news: 时政要闻（从人民日报头版提取）
 """
@@ -30,10 +30,9 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_DIR = os.path.join(SCRIPT_DIR, "..", "data")
 OUTPUT_FILE = os.path.join(OUTPUT_DIR, f"daily-brief-{TODAY}.json")
 
-# 多数据源
+# 多数据源（人民日报用 RSS，求是用官网直抓）
 FEED_SOURCES = [
     ("https://feedx.net/rss/people.xml",    "人民日报"),
-    ("https://feedx.net/rss/qstheory.xml",  "求是"),
 ]
 
 HEADERS = {
@@ -173,6 +172,78 @@ def fetch_rss(url, source_name):
             "shortSource": f"{source_name} {TODAY_SHORT}"
         })
 
+    return entries
+
+
+def fetch_qstheory_direct():
+    """直接从求是官网抓取最新文章（feedx.net RSS 已停更在 2024 年）"""
+    import time
+
+    base_url = "https://www.qstheory.cn"
+
+    # 第一步：抓首页，提取文章链接
+    try:
+        req = Request(base_url, headers=HEADERS)
+        with urlopen(req, timeout=20) as resp:
+            html = resp.read().decode("utf-8", errors="replace")
+    except (URLError, HTTPError, OSError) as e:
+        print(f"  [ERROR] 无法获取求是官网首页: {e}", file=sys.stderr)
+        return []
+
+    # 提取所有文章链接（格式：/YYYYMMDD/hash/c.html）
+    links = re.findall(r'href="(/[12]\d{5}/[a-f0-9]{30,32}/c\.html)"', html)
+    # 去重保序
+    seen_links = set()
+    unique_links = []
+    for l in links:
+        if l not in seen_links:
+            seen_links.add(l)
+            unique_links.append(l)
+
+    # 限制最多 15 篇，避免太慢
+    unique_links = unique_links[:15]
+    print(f"  [求是] 首页发现 {len(unique_links)} 篇文章链接")
+
+    # 第二步：逐篇抓取文章内容
+    entries = []
+    for i, path in enumerate(unique_links):
+        url = base_url + path
+        try:
+            req = Request(url, headers=HEADERS)
+            with urlopen(req, timeout=15) as resp:
+                article_html = resp.read().decode("utf-8", errors="replace")
+        except (URLError, HTTPError, OSError):
+            continue
+
+        # 提取标题
+        title_match = re.search(r"<title>(.+?)</title>", article_html)
+        title = clean_text(title_match.group(1).replace(" - 求是网", "")) if title_match else ""
+
+        # 提取正文：求是文章正文在 <p> 标签里，带全角空格缩进
+        paragraphs = re.findall(r"<p[^>]*>(.*?)</p>", article_html, re.DOTALL)
+        body_parts = []
+        for p in paragraphs:
+            text = clean_text(p)
+            if len(text) > 15:  # 过滤短段
+                body_parts.append(text)
+        body = " ".join(body_parts)
+
+        if not title or len(body) < 50:
+            continue
+
+        entries.append({
+            "title": title,
+            "desc": body,
+            "link": url,
+            "date": "",
+            "source": "求是",
+            "shortSource": f"求是 {TODAY_SHORT}"
+        })
+
+        # 礼貌延迟，避免请求过快
+        time.sleep(0.3)
+
+    print(f"  [求是] 成功抓取 {len(entries)} 篇文章")
     return entries
 
 
@@ -462,10 +533,10 @@ def main():
     print(f"\n{'='*60}")
     print(f"  shed 每日申论素材自动抓取")
     print(f"  日期: {TODAY}")
-    print(f"  数据源: 人民日报 + 求是")
+    print(f"  数据源: 人民日报(RSS) + 求是(官网直抓)")
     print(f"{'='*60}\n")
 
-    # 获取所有 RSS 源
+    # 获取人民日报 RSS
     all_entries = []
     for url, name in FEED_SOURCES:
         entries = fetch_rss(url, name)
@@ -474,6 +545,14 @@ def main():
             print(f"  [{name}] {len(entries)} 篇")
         else:
             print(f"  [{name}] 获取失败，跳过")
+
+    # 获取求是文章（直接从官网抓取，feedx RSS 已停更）
+    qs_entries = fetch_qstheory_direct()
+    if qs_entries:
+        all_entries.extend(qs_entries)
+        print(f"  [求是] {len(qs_entries)} 篇")
+    else:
+        print(f"  [求是] 获取失败，跳过")
 
     if not all_entries:
         print("[ERROR] 所有数据源均获取失败，退出", file=sys.stderr)
