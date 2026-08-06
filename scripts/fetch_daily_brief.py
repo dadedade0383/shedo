@@ -190,8 +190,8 @@ def fetch_qstheory_direct():
         print(f"  [ERROR] 无法获取求是官网首页: {e}", file=sys.stderr)
         return []
 
-    # 提取所有文章链接（格式：/YYYYMMDD/hash/c.html）
-    links = re.findall(r'href="(/[12]\d{5}/[a-f0-9]{30,32}/c\.html)"', html)
+    # 提取所有文章链接（格式：/YYYYMMDD/hash/c.html，可能是相对路径或完整URL）
+    links = re.findall(r'href="(?:https?://www\.qstheory\.cn)?(/[12]\d{5}/[a-f0-9]{30,32}/c\.html)"', html)
     # 去重保序
     seen_links = set()
     unique_links = []
