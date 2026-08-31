@@ -555,11 +555,26 @@ function renderMaterialLibrary(){
   if(savedDates){
     try{ materialDates = JSON.parse(savedDates); }catch(e){ materialDates = []; }
   }
-  // 尝试加载最近14天的素材文件
-  loadAvailableDates().then(()=>{
+  // 优先读日期索引（全量历史），失败再探测最近14天
+  loadDateIndex().then(()=>{
     renderDateList();
     selectMaterialDate(currentMaterialDate);
   });
+}
+
+// 读 data/index.json 获取全部历史日期
+function loadDateIndex(){
+  return fetch('data/index.json')
+    .then(r=>{ if(!r.ok) throw new Error('nf'); return r.json(); })
+    .then(idx=>{
+      if(Array.isArray(idx.dates) && idx.dates.length){
+        materialDates = idx.dates.slice(); // 索引为准，覆盖本地列表
+        localStorage.setItem('wb_material_dates', JSON.stringify(materialDates));
+        return;
+      }
+      throw new Error('empty');
+    })
+    .catch(()=> loadAvailableDates()); // 无索引时降级：探测最近14天
 }
 
 // 尝试 fetch 最近14天的 JSON，记录哪些存在
@@ -592,20 +607,29 @@ function loadAvailableDates(){
   });
 }
 
-// 渲染日期列表
+// 渲染日期列表（全部历史日期，按月分组，最新在前）
 function renderDateList(){
   const container = $('#materialDateList');
   if(!container) return;
-  // 生成最近14天的日期 pill
-  const now = new Date();
+
+  // 待展示的日期：历史素材日期 + 今天（今天可能还没生成）
+  const all = materialDates.slice();
+  const t = today();
+  if(!all.includes(t)) all.unshift(t);
+  all.sort().reverse();
+
   let html = '';
-  for(let i=0;i<14;i++){
-    const d = new Date(now); d.setDate(d.getDate()-i);
-    const ds = d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+  let lastMonth = '';
+  for(const ds of all){
+    const d = new Date(ds);
+    const monthKey = (d.getFullYear())+'-'+(d.getMonth()+1);
+    if(monthKey !== lastMonth){
+      lastMonth = monthKey;
+      html += '<div class="material-month-label">'+(d.getFullYear())+'年'+(d.getMonth()+1)+'月</div>';
+    }
     const label = (d.getMonth()+1)+'/'+d.getDate();
-    const hasData = materialDates.includes(ds);
     const active = ds === currentMaterialDate ? ' active' : '';
-    const dataCls = hasData ? ' has-data' : '';
+    const dataCls = materialDates.includes(ds) ? ' has-data' : '';
     html += '<span class="material-date-pill'+active+dataCls+'" data-mdate="'+ds+'">'+label+'</span>';
   }
   container.innerHTML = html;

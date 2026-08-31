@@ -1,7 +1,7 @@
 // 根据 SW 自身位置推算部署根路径（兼容 GitHub Pages 子目录 /shedo/）
 const BASE = new URL('.', self.location.href).pathname.replace(/\/$/,'');
 
-const CACHE = 'shedo-v12';
+const CACHE = 'shedo-v13';
 const FILES = [
   BASE + '/',
   BASE + '/index.html',
@@ -26,8 +26,8 @@ self.addEventListener('activate',e=>{
 self.addEventListener('fetch',e=>{
   const url = new URL(e.request.url);
 
-  // 素材JSON: Network First
-  if(url.pathname.includes('/data/daily-brief-')){
+  // 素材JSON + 日期索引: Network First
+  if(url.pathname.includes('/data/daily-brief-') || url.pathname.includes('/data/index.json')){
     e.respondWith(
       fetch(e.request).then(response=>{
         const clone = response.clone();

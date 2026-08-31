@@ -529,6 +529,22 @@ def extract_news(entries, case_titles=None):
 
 # ── 主流程 ─────────────────────────────────────────────
 
+def write_date_index():
+    """扫描 data/ 目录所有 daily-brief-*.json，生成日期索引供前端读取"""
+    dates = []
+    if os.path.isdir(OUTPUT_DIR):
+        for fn in os.listdir(OUTPUT_DIR):
+            m = re.match(r"daily-brief-(\d{4}-\d{2}-\d{2})\.json$", fn)
+            if m:
+                dates.append(m.group(1))
+    dates.sort(reverse=True)
+    index = {"updatedAt": f"{TODAY} {datetime.now().strftime('%H:%M')}", "dates": dates}
+    index_file = os.path.join(OUTPUT_DIR, "index.json")
+    with open(index_file, "w", encoding="utf-8") as f:
+        json.dump(index, f, ensure_ascii=False, indent=2)
+    print(f"  索引: {index_file} ({len(dates)} 个日期)")
+
+
 def main():
     print(f"\n{'='*60}")
     print(f"  shed 每日申论素材自动抓取")
@@ -606,6 +622,10 @@ def main():
         json.dump(result, f, ensure_ascii=False, indent=2)
 
     print(f"\n  写入: {OUTPUT_FILE}")
+
+    # 更新日期索引（前端用它展示全部历史日期）
+    write_date_index()
+
     print(f"  完成! {len(words)} 金句 | {len(cases)} 案例 | {len(news)} 时政")
     print(f"{'='*60}\n")
 
